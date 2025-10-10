@@ -1,0 +1,12 @@
+mujoco==3.3.0
+Cython==3.0.12
+matplotlib==3.10.0
+matplotlib-inline==0.1.7
+numpy==2.2.3
+opencv-python==4.11.0.86
+PyOpenGL==3.1.9
+scipy==1.15.2
+torch==2.6.0
+torchvision==0.21.0
+-e git+ssh://git@github.com/cambel/ur_ikfast.git#egg=ur_ikfast&subdirectory=../../ur_ikfast
+
