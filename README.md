@@ -26,5 +26,9 @@ pip install -r requirements.txt
 ```
 
 ```
+cp temp/pyproject.toml ur_ikfast/pyproject.toml
+```
+
+```
 cd ur_ikfast && pip install -e .
 ```
