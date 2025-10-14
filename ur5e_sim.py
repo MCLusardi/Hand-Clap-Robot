@@ -10,7 +10,8 @@ class UR5eSim:
         self.m = mujoco.MjModel.from_xml_path(model_path)
         self.d = mujoco.MjData(self.m)
         self.loop_callback = loop_callback if loop_callback is not None else self.default_loop_callback
-        self.robot1_controls = np.zeros(6)
+        self.paused = False
+        self.robot_controls = np.zeros(6)
 
     def loop(self):
         def key_callback(keycode, paused):
@@ -25,11 +26,10 @@ class UR5eSim:
                     v.sync()
 
     def default_loop_callback(self):
-        self.d.ctrl[:] = self.robot1_controls
+        self.d.ctrl[:] = self.robot_controls
 
     def set_robot_control(self, robot, controls):
-        if robot == 1:
-            self.robot1_controls = controls
+        self.robot_controls = controls
 
     def set_robot_control_by_ee(self, robot, ee_pos, ee_quat, make_relative=False):
         ur5e_arm = ur_kinematics.URKinematics('ur5e')
@@ -41,20 +41,23 @@ class UR5eSim:
 
         joint_configs = ur5e_arm.inverse(ee_trans[:-1,:], False)
 
-        if robot == 1:
-            self.robot1_controls[:-1] = joint_configs
+        self.robot_controls = joint_configs
 
     def set_gripper(self, robot, ee_angle):
-        if robot == 1:
-            self.robot1_controls[-1] = ee_angle
+        self.robot_controls[-1] = ee_angle
 
     def get_base_transform(self, robot):
-        if robot == 1:
-            body = self.m.body('arm1_base')
+        body = self.m.body('base')
         return position_quaternion_to_transform(body.pos, body.quat)
 
 def main():
     sim = UR5eSim()
+    robot1_base = sim.get_base_transform(1)
+    # Define the desired EE transforms for each robot.
+    robot1_pos = np.array([-2.87935048e-01, -1.40407637e-01,  3.06456357e-01])
+    robot1_quat = np.array([6.92255947e-01, 7.21356638e-01, -4.29355962e-04, -2.06427328e-02])
+    sim.set_robot_control_by_ee(1, robot1_pos, robot1_quat, make_relative=True)
+
     sim.loop()
 
 if __name__ == "__main__":
