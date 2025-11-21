@@ -220,3 +220,4 @@ trajectories*
 .DS_Store
 dynamic-hand-gesture-recognition/
 wandb/
+processed_data/
